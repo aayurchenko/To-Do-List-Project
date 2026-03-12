@@ -9,25 +9,127 @@ buttonChangeThemeElement.addEventListener('click', () => {
 })
 
 // Todo 
+
+const todoListElement = document.querySelector('.todo__list');
+
+const STORAGE_KEY = 'todos';
+
 let todos = [];
 
 const defaultTodos = [
   {
     id: Date.now(),
     text: "Первая задача",
-    isCompleted: false,
+    completed: false,
   },
   {
     id: Date.now() + 1,
     text: "Вторая задача для примера",
-    isCompleted: true,
+    completed: true,
   },
 ];
 
-const todoListElement = document.querySelector('.todo__list');
+//Добавление задачи
 
-const STORAGE_KEY = 'todos';
+const addItemFormElement = document.querySelector('.addtodo__item')
+const addItemTextElement = document.querySelector('.todo-item__addText');
 
+function addTodo(event) {
+  event.preventDefault()
+
+  const text = addItemTextElement.value.trim();
+  
+  if (!text) {
+    return alert('Строка пустая')
+  }
+
+  const newTodo = {
+    id: Date.now(),
+    text: text,
+    completed: false,
+  }
+
+  todos.push(newTodo)
+
+  saveTodos()
+
+  renderTodoElement(newTodo)
+
+  addItemTextElement.value = ''
+  addItemTextElement.focus()
+  console.log(todos);
+  
+}
+
+//Удаление задачи
+
+// const deleteItemButtonElement = document.querySelector('todo-item__delete');
+
+function deleteTodo(event) {
+  const deleteButton = event.target.closest('.todo-item__delete');
+
+  if (!deleteButton) {
+    return;
+  }
+
+  const todoItemElement = event.target.closest('.todo-item')
+  
+  if (!todoItemElement) {
+    return;
+  }
+
+  const todoId = todoItemElement.dataset.id
+
+  todos = todos.filter((todo) => {
+    return String(todo.id) !== todoId
+  })
+
+  saveTodos()
+
+  todoItemElement.remove()
+}
+
+todoListElement.addEventListener('click', deleteTodo);
+
+// Переключатель комплитед 
+
+function toggleTodoCompleted(event) {
+  const completedControl = event.target.closest('.todo-item__toggle');
+
+  if (!completedControl) {
+    return;
+  }
+
+  const todoItemElement = event.target.closest('.todo-item');
+
+  if (!todoItemElement) {
+    return;
+  }
+
+  const todoId = todoItemElement.dataset.id;
+
+  const todo = todos.find((todo) => {
+    return String(todo.id) === todoId
+  })
+
+  if (!todo) {
+    return
+  }
+
+  todo.completed = !todo.completed
+
+  saveTodos()
+
+  replaceTodoItem(todo)
+}
+todoListElement.addEventListener('click', toggleTodoCompleted)
+
+
+
+
+
+
+addItemFormElement.addEventListener('submit', addTodo);
 
 function loadTodos() {
   const savedTodos = localStorage.getItem(STORAGE_KEY);
@@ -44,7 +146,7 @@ function saveTodos() {
 }
 
 function getTodos() {
-  return JSON.parse(localStorage.getItem('todos') || []);
+  return JSON.parse(localStorage.getItem('todos') || "[]");
 }
 
 function createTodoItem (todo) {
@@ -54,8 +156,8 @@ function createTodoItem (todo) {
 
   itemElement.dataset.id = String(todo.id);
 
-  if (todo.isCompleted) {
-    itemElement.classList.add('is-completed');
+  if (todo.Completed) {
+    itemElement.classList.add('completed');
   }
 
   itemElement.innerHTML = `
@@ -81,6 +183,21 @@ function renderTodoList() {
   todos.forEach(todo => {
     renderTodoElement(todo);
   });
+}
+
+function getTodoElementById(todoId) {
+  return todoListElement.querySelector(`[data-id="${todoId}"]`)
+}
+
+function replaceTodoItem(todo) {
+  const currentTodoElement = getTodoElementById(todo.id)
+
+  if (!currentTodoElement) {
+    return
+  }
+
+  const newTodoElement = createTodoItem(todo)
+  currentTodoElement.replaceWith(newTodoElement)
 }
 
 function init() {
