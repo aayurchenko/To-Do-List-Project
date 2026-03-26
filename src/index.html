@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
   <title>To Do List</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="styles/style.css">
   <script src="script.js" type="module"></script>
 </head>
 <body>
-  <header>
+  <!-- <header>
     <h2 class="title">Todo List JavaScript</h2>
     <a href="#" class="btn_change_theme" id="button_change_theme">Сменить тему</a>
   </header>
@@ -22,11 +22,11 @@
         <button class="todo-item__add" type="submit" >Добавить задачу</button>
       </form>
     </div> 
-  </main>
+  </main> -->
 
   <div class="todo">
     <h1 class="todo__title">To Do List</h1>
-    <form class="todo__form">
+    <form class="todo__form todo__add-form">
       <div class="todo__field field">
         <label 
           for="new-task" 
@@ -41,7 +41,7 @@
           autocomplete="off"
           />
       </div>
-      <button class="button" type="submit">Add</button>
+      <button class="button todo-item__add-button" id="todo-item__add-button" type="submit">Add</button>
     </form>
     <form class="todo__form">
       <div class="todo__field field">
@@ -92,28 +92,9 @@
         </svg>
         </button>
       </li>
-      <li class="todo__item todo-item">
-        <input 
-          type="checkbox" 
-          class="todo-item__checkbox" 
-          id="todo-1"
-        />
-        <label for="todo-1" class="todo-item__label">
-          Todo 1
-        </label>
-        <button 
-          class="todo-item__delete-button" 
-          type="button"
-          aria-label="Delete"
-          title="Delete"
-        >
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M15 5L5 15M5 5L15 15" stroke="#757575" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        </button>
-      </li>
     </ul>
-    <div class="todo__empty-message"> </div>
+    <div class="todo__empty-message"></div>
+    <button class=" button btn_change_theme" id="button_change_theme">Change theme</button>
   </div>
 
 

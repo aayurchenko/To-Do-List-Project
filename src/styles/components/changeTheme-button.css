@@ -1,48 +1,4 @@
-
-@import url('https://fonts.googleapis.com/css?family=Rubik:500');
-
-* {
-  padding:0;
-  margin:0;
-}
-
-body {
-  font-family: 'Rubik', sans-serif;
-  background-color: #fff;
-}
-
-.dark {
-  background-color: #2a292a;
-  color: #fff;
-}
-
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 20px;
-}
-
-.container {
-  margin: 0 50px 0;
-}
-
-.btn_change_theme {
-
-}
-
-.todo-item {
-  display: flex;
-  flex-direction: row;
-}
-
-.todo-item__text {
-  display: block;
-  width: 50vw;
-}
-
-
-
+/* 
 .btn_change_theme {
   padding: 16px 42px;
   border-radius: 3px;
@@ -83,4 +39,9 @@ header {
       height: 300px;
     }
   }
+} */
+
+.btn_change_theme {
+  align-self: center;
+  width: 50%;
 }

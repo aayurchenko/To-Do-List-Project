@@ -1,7 +1,8 @@
 // Смена темы
 const buttonChangeThemeElement = document.querySelector('.btn_change_theme');
 
-buttonChangeThemeElement.addEventListener('click', () => {
+buttonChangeThemeElement.addEventListener('click', (e) => {
+  e.preventDefault();
   document.body.classList.toggle('dark');
 
   const isDark = document.body.classList.contains('dark');
@@ -15,6 +16,18 @@ const todoListElement = document.querySelector('.todo__list');
 const STORAGE_KEY = 'todos';
 
 let todos = [];
+
+function Todo(text, completed) {
+  this.id = Date.now();
+  this.text = text;
+
+  if (completed != undefined) {
+    this.completed = completed;
+    return;
+  }
+  
+  this.completed = false;
+}
 
 const defaultTodos = [
   {
@@ -31,10 +44,11 @@ const defaultTodos = [
 
 //Добавление задачи
 
-const addItemFormElement = document.querySelector('.addtodo__item')
-const addItemTextElement = document.querySelector('.todo-item__addText');
+const addItemFormElement = document.querySelector('.todo__add-form')
+const addItemTextElement = document.querySelector('#new-task');
 
 function addTodo(event) {
+  
   event.preventDefault()
 
   const text = addItemTextElement.value.trim();
@@ -43,30 +57,29 @@ function addTodo(event) {
     return alert('Строка пустая')
   }
 
-  const newTodo = {
-    id: Date.now(),
-    text: text,
-    completed: false,
-  }
+  const todo = new Todo(text);
 
-  todos.push(newTodo)
+  todos.push(todo)
 
   saveTodos()
 
-  renderTodoElement(newTodo)
+  renderTodoElement(todo)
 
   addItemTextElement.value = ''
   addItemTextElement.focus()
   console.log(todos);
   
+  updateTotalTasks()
 }
+
+addItemFormElement.addEventListener('submit', addTodo);
 
 //Удаление задачи
 
 // const deleteItemButtonElement = document.querySelector('todo-item__delete');
 
 function deleteTodo(event) {
-  const deleteButton = event.target.closest('.todo-item__delete');
+  const deleteButton = event.target.closest('.todo-item__delete-button');
 
   if (!deleteButton) {
     return;
@@ -80,13 +93,18 @@ function deleteTodo(event) {
 
   const todoId = todoItemElement.dataset.id
 
+  todoItemElement.classList.add('is-disappearing');
+
   todos = todos.filter((todo) => {
     return String(todo.id) !== todoId
   })
+  
+  saveTodos();
 
-  saveTodos()
+  todoItemElement.remove();
 
-  todoItemElement.remove()
+  updateTotalTasks()
+  
 }
 
 todoListElement.addEventListener('click', deleteTodo);
@@ -94,7 +112,7 @@ todoListElement.addEventListener('click', deleteTodo);
 // Переключатель комплитед 
 
 function toggleTodoCompleted(event) {
-  const completedControl = event.target.closest('.todo-item__toggle');
+  const completedControl = event.target.closest('.todo-item__checkbox');
 
   if (!completedControl) {
     return;
@@ -122,14 +140,19 @@ function toggleTodoCompleted(event) {
 
   replaceTodoItem(todo)
 }
-todoListElement.addEventListener('click', toggleTodoCompleted)
+todoListElement.addEventListener('click', toggleTodoCompleted) 
+
+
+// Счетчик задач
+
+const counterTasks = document.querySelector('.todo__total-tasks span');
+
+function updateTotalTasks() {
+  counterTasks.textContent = todos.length;
+}
 
 
 
-
-
-
-addItemFormElement.addEventListener('submit', addTodo);
 
 function loadTodos() {
   const savedTodos = localStorage.getItem(STORAGE_KEY);
@@ -156,20 +179,36 @@ function createTodoItem (todo) {
 
   itemElement.dataset.id = String(todo.id);
 
-  if (todo.Completed) {
+  if (todo.completed) {
     itemElement.classList.add('completed');
   }
 
   itemElement.innerHTML = `
-    <button class="todo-item__toggle" type="button">
-      ${todo.completed ? '✅' : '⬜'}
+    <input 
+      type="checkbox" 
+      class="todo-item__checkbox" 
+      id="${todo.id}"
+      ${todo.completed ? 'checked' : ''}
+    />
+    <label for="${todo.id}" class="todo-item__label">
+      ${todo.text}
+    </label>
+    <button 
+      class="todo-item__delete-button" 
+      type="button"
+      aria-label="Delete"
+      title="Delete"
+    >
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M15 5L5 15M5 5L15 15" stroke="#757575" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
     </button>
-    <span class="todo-item__text">${todo.text}</span>
-    <button class="todo-item__delete" type="button">Удалить</button>
   `
 
   return itemElement;
 }
+
+
 
 function renderTodoElement(todo) {
   const itemElement = createTodoItem(todo);
@@ -201,9 +240,18 @@ function replaceTodoItem(todo) {
 }
 
 function init() {
+  const savedTheme = localStorage.getItem('theme');
+
+  if (savedTheme === 'dark') {
+    document.body.classList.add('dark');
+  }
+
   todos = loadTodos();
   saveTodos();
   renderTodoList();
+  updateTotalTasks()
 }
+
+
 
 init()
